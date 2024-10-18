@@ -110,8 +110,8 @@ class ServiceTest extends KernelTestCase
         $this->service->foobar();
     }
 
-    #[Group('exception')]
-    public function testException(): void
+    #[Group('client_exception')]
+    public function testClientException(): void
     {
         $this->httpClient->setResponseFactory([
             $response1 = new MockResponse('body'),
@@ -120,6 +120,20 @@ class ServiceTest extends KernelTestCase
         ]);
 
         $this->expectException(ClientExceptionInterface::class);
+
+        $this->service->foobar();
+    }
+
+    #[Group('server_exception')]
+    public function testServerException(): void
+    {
+        $this->httpClient->setResponseFactory([
+            $response1 = new MockResponse('body'),
+            $response2 = new MockResponse('body2'),
+            $response3 = new MockResponse('body3', ['http_code' => 504]),
+        ]);
+
+        $this->expectException(ServerExceptionInterface::class);
 
         $this->service->foobar();
     }
@@ -152,6 +166,7 @@ class ServiceTest extends KernelTestCase
 
         $result = $this->service->foobar();
 
+        //exception is thrown when accessing content
         $this->expectException(TransportExceptionInterface::class);
 
         $result->getContent();
