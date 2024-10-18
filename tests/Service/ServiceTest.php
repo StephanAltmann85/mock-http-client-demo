@@ -59,12 +59,25 @@ class ServiceTest extends KernelTestCase
 
         $result = $service->foobar();
 
-        // number of requests received
-        $this->assertSame(3, $mockHttpClient->getRequestsCount());
-
         $this->assertSame('body3', $result->getContent());
         $this->assertSame(200, $result->getStatusCode());
         $this->assertSame(['foo' => ['bar']], $result->getHeaders());
+    }
+
+    #[Group('count')]
+    public function testCount(): void
+    {
+        $this->mockHttpClient->setResponseFactory([
+            new MockResponse('body'),
+            new MockResponse('body'),
+            new MockResponse('body'),
+            new MockResponse('body'),
+        ]);
+
+        $this->service->foobar();
+
+        // number of requests received
+        $this->assertSame(3, $this->mockHttpClient->getRequestsCount());
     }
 
     #[Group('request_details')]
