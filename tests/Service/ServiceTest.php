@@ -19,7 +19,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[CoversClass(Service::class)]
 class ServiceTest extends KernelTestCase
 {
-    private MockHttpClient $httpClient;
+    private MockHttpClient $mockHttpClient;
     private Service $service;
 
     /**
@@ -35,7 +35,7 @@ class ServiceTest extends KernelTestCase
         /** @phpstan-var Service $collector */
         $service = $container->get(Service::class);
 
-        $this->httpClient = $mockHttpClient;
+        $this->mockHttpClient = $mockHttpClient;
         $this->service = $service;
 
         parent::setUp();
@@ -58,6 +58,10 @@ class ServiceTest extends KernelTestCase
         $service = new Service($mockHttpClient);
 
         $result = $service->foobar();
+
+        // number of requests received
+        $this->assertSame(3, $mockHttpClient->getRequestsCount());
+
         $this->assertSame('body3', $result->getContent());
         $this->assertSame(200, $result->getStatusCode());
         $this->assertSame(['foo' => ['bar']], $result->getHeaders());
@@ -66,7 +70,7 @@ class ServiceTest extends KernelTestCase
     #[Group('request_details')]
     public function testRequestOptions(): void
     {
-        $this->httpClient->setResponseFactory([
+        $this->mockHttpClient->setResponseFactory([
             $response1 = new MockResponse('body'),
             $response2 = new MockResponse('body2'),
             $response3 = new MockResponse('body3', ['http_code' => 204]),
@@ -105,7 +109,7 @@ class ServiceTest extends KernelTestCase
             },
         ];
 
-        $this->httpClient->setResponseFactory($expectedRequests);
+        $this->mockHttpClient->setResponseFactory($expectedRequests);
 
         $this->service->foobar();
     }
@@ -113,7 +117,7 @@ class ServiceTest extends KernelTestCase
     #[Group('client_exception')]
     public function testClientException(): void
     {
-        $this->httpClient->setResponseFactory([
+        $this->mockHttpClient->setResponseFactory([
             new MockResponse('body'),
             new MockResponse('body2'),
             new MockResponse('body3', ['http_code' => 404]),
@@ -127,7 +131,7 @@ class ServiceTest extends KernelTestCase
     #[Group('server_exception')]
     public function testServerException(): void
     {
-        $this->httpClient->setResponseFactory([
+        $this->mockHttpClient->setResponseFactory([
             new MockResponse('body'),
             new MockResponse('body2'),
             new MockResponse('body3', ['http_code' => 504]),
@@ -141,7 +145,7 @@ class ServiceTest extends KernelTestCase
     #[Group('transport_exception')]
     public function testTransportException(): void
     {
-        $this->httpClient->setResponseFactory([
+        $this->mockHttpClient->setResponseFactory([
             new MockResponse('body', info: ['error' => 'host unreachable']),
         ]);
 
@@ -158,7 +162,7 @@ class ServiceTest extends KernelTestCase
     #[Group('body_exception')]
     public function testBodyException(): void
     {
-        $this->httpClient->setResponseFactory([
+        $this->mockHttpClient->setResponseFactory([
             new MockResponse('body'),
             new MockResponse('body2'),
             new MockResponse([new \RuntimeException('Error at transport level')]),
@@ -166,7 +170,7 @@ class ServiceTest extends KernelTestCase
 
         $result = $this->service->foobar();
 
-        //exception is thrown when accessing content
+        // exception is thrown when accessing content
         $this->expectException(TransportExceptionInterface::class);
 
         $result->getContent();
