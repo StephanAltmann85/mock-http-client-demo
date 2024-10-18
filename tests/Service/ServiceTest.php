@@ -114,9 +114,9 @@ class ServiceTest extends KernelTestCase
     public function testClientException(): void
     {
         $this->httpClient->setResponseFactory([
-            $response1 = new MockResponse('body'),
-            $response2 = new MockResponse('body2'),
-            $response3 = new MockResponse('body3', ['http_code' => 404]),
+            new MockResponse('body'),
+            new MockResponse('body2'),
+            new MockResponse('body3', ['http_code' => 404]),
         ]);
 
         $this->expectException(ClientExceptionInterface::class);
@@ -128,9 +128,9 @@ class ServiceTest extends KernelTestCase
     public function testServerException(): void
     {
         $this->httpClient->setResponseFactory([
-            $response1 = new MockResponse('body'),
-            $response2 = new MockResponse('body2'),
-            $response3 = new MockResponse('body3', ['http_code' => 504]),
+            new MockResponse('body'),
+            new MockResponse('body2'),
+            new MockResponse('body3', ['http_code' => 504]),
         ]);
 
         $this->expectException(ServerExceptionInterface::class);
