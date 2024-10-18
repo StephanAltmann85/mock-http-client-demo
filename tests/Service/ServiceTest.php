@@ -127,6 +127,11 @@ class ServiceTest extends KernelTestCase
         $this->service->foobar();
     }
 
+    /**
+     * Exceptions implementing the HttpExceptionInterface are thrown when your code does not handle the status codes in the 300-599 range.
+     * Exceptions implementing the TransportExceptionInterface are thrown when a lower level issue occurs.
+     * Exceptions implementing the DecodingExceptionInterface are thrown when a content-type cannot be decoded to the expected representation.
+     */
     #[Group('client_exception')]
     public function testClientException(): void
     {
