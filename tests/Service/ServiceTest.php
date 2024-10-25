@@ -30,9 +30,11 @@ class ServiceTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
 
-        /** @phpstan-var MockHttpClient $mockHttpClient */
-        $mockHttpClient = $container->get(HttpClientInterface::class);
-        /** @phpstan-var Service $collector */
+        /** replace HttpClientInterface with MockHttpClient here or globally @test in services.yaml */
+        $mockHttpClient = new MockHttpClient();
+        $container->set(HttpClientInterface::class, $mockHttpClient);
+
+        /** @phpstan-var Service $service */
         $service = $container->get(Service::class);
 
         $this->mockHttpClient = $mockHttpClient;
