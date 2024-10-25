@@ -7,7 +7,7 @@ namespace App\Service;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class Service
+readonly class Service
 {
     public function __construct(private HttpClientInterface $client)
     {

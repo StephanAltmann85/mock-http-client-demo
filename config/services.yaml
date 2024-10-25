@@ -19,6 +19,8 @@ when@test:
             autoconfigure: true
             public: true
 
+        #Symfony\Contracts\HttpClient\HttpClientInterface $name:
+
         #Symfony\Contracts\HttpClient\HttpClientInterface:
             #class: Symfony\Component\HttpClient\MockHttpClient
 
